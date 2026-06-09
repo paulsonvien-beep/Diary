@@ -926,8 +926,14 @@ let adminOk=false, drag=null, curPage='';
 /* ── STORAGE ── */
 function getCats(){try{return JSON.parse(localStorage.getItem('dc')||'null')||['intro','love','work','mine']}catch{return['intro','love','work','mine']}}
 function saveCats(a){localStorage.setItem('dc',JSON.stringify(a))}
-function getEntries(){try{return JSON.parse(localStorage.getItem('de')||'[]')}catch{return[]}}
-function saveEntries(a){localStorage.setItem('de',JSON.stringify(a))}
+/* ── ENTRIES (Supabase) ── */
+let _ec=null;
+async function getEntries(){
+  if(_ec)return _ec;
+  try{const r=await fetch(`${SUPA}/rest/v1/entries?order=date.desc`,{headers:H});_ec=await r.json();return _ec;}
+  catch{return[]}
+}
+function clearEntryCache(){_ec=null;}
 
 /* ── OPEN BOOK ── */
 function openBook(){
@@ -980,10 +986,11 @@ function showPage(p){
 }
 
 /* ── RENDER CHAPTER ── */
-function renderChapter(cat){
+async function renderChapter(cat){
   const chaps={intro:'Chapter One',love:'Chapter Two',work:'Chapter Three',mine:'Chapter Four'};
   const subs={intro:'Where it all begins',love:'What the heart holds',work:'Ambition and its cost',mine:'Everything else'};
-  const entries=getEntries().filter(e=>e.cat===cat);
+  const all=await getEntries();
+  const entries=all.filter(e=>e.cat===cat);
   const pg=document.getElementById('pageContainer');
   const pgNum=getCats().indexOf(cat)+1;
 
@@ -1114,7 +1121,8 @@ async function savePhotoRec(eid,url,x,y,rot){
 
 /* ── OPEN ENTRY MODAL ── */
 async function openEntry(id){
-  const e=getEntries().find(x=>x.id===id);
+  const all=await getEntries();
+  const e=all.find(x=>x.id===id);
   if(!e)return;
   document.getElementById('modalInner').innerHTML=`
     <div style="font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink3);opacity:.45;margin-bottom:10px">${fmtDate(e.date)} — ${e.cat}</div>
@@ -1204,21 +1212,23 @@ function fillCatSelect(){
   s.innerHTML=getCats().map(c=>`<option value="${c}">${cap(c)}</option>`).join('');
 }
 
-function saveEntry(){
+async function saveEntry(){
   const t=document.getElementById('newTitle').value.trim();
   const b=document.getElementById('newBody').value.trim();
   const c=document.getElementById('newCat').value;
   if(!t||!b){showToast('Title and body required.',true);return}
-  const entries=getEntries();
-  entries.unshift({id:Date.now(),date:new Date().toISOString(),title:t,body:b,cat:c});
-  saveEntries(entries);
-  document.getElementById('newTitle').value='';
-  document.getElementById('newBody').value='';
-  renderAdminEntries();showToast('Entry saved.');
+  const entry={id:Date.now(),date:new Date().toISOString(),title:t,body:b,cat:c};
+  try{
+    await fetch(`${SUPA}/rest/v1/entries`,{method:'POST',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify(entry)});
+    clearEntryCache();
+    document.getElementById('newTitle').value='';
+    document.getElementById('newBody').value='';
+    await renderAdminEntries();showToast('Entry saved.');
+  }catch{showToast('Could not save.',true)}
 }
 
-function renderAdminEntries(){
-  const entries=getEntries();
+async function renderAdminEntries(){
+  const entries=await getEntries();
   const el=document.getElementById('adminEntries');
   if(!entries.length){el.innerHTML='<div class="empty-state" style="padding:20px 0;font-size:14px">No entries.</div>';return}
   el.innerHTML=entries.map(e=>`
@@ -1229,26 +1239,36 @@ function renderAdminEntries(){
       <button class="del-lnk" onclick="delEntry(${e.id})">Delete</button>
     </div>`).join('');
 }
-function delEntry(id){
+async function delEntry(id){
   if(!confirm('Delete entry?'))return;
-  saveEntries(getEntries().filter(e=>e.id!==id));
-  renderAdminEntries();showToast('Deleted.');
+  try{
+    await fetch(`${SUPA}/rest/v1/entries?id=eq.${id}`,{method:'DELETE',headers:H});
+    clearEntryCache();
+    await renderAdminEntries();showToast('Deleted.');
+  }catch{showToast('Could not delete.',true)}
 }
 
 async function openPhotoMgr(eid){
-  const e=getEntries().find(x=>x.id===eid);if(!e)return;
+  const all=await getEntries();
+  const e=all.find(x=>x.id===eid);if(!e)return;
   document.getElementById('modalInner').innerHTML=`
     <div style="font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink3);opacity:.45;margin-bottom:8px">Photo Board</div>
     <div style="font-family:'Times New Roman',Georgia,serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:16px">${esc(e.title)}</div>
 
-    <label style="display:inline-block;margin-bottom:14px;cursor:pointer">
-      <input type="file" accept="image/*" multiple id="filePickerInput" style="display:none" onchange="handleFilePick(event,${eid})"/>
-      <span style="font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink3);opacity:.55;border:1px solid rgba(80,50,0,0.25);padding:8px 20px;cursor:pointer">+ Add Photos</span>
-    </label>
-    <div style="font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);opacity:.3;margin-bottom:12px">Right-click a photo to delete &bull; Drag to reposition on board</div>
+    <div style="margin-bottom:16px">
+      <input type="file" accept="image/*" multiple id="filePickerInput" style="
+        display:block;width:100%;padding:14px;
+        font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.2em;
+        text-transform:uppercase;color:var(--ink3);
+        border:1px solid rgba(80,50,0,0.25);
+        background:rgba(245,230,200,0.3);
+        cursor:pointer;
+      " onchange="handleFilePick(event,${eid})"/>
+      <div style="font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);opacity:.3;margin-top:8px">Tap to select photos from your camera roll &bull; Long-press photo to delete</div>
+    </div>
 
     <div class="drop-board" id="mgr-pb-${eid}">
-      <div class="drop-hint"><span>+</span>Drop photos here</div>
+      <div class="drop-hint"><span>+</span>Photos appear here</div>
     </div>
   `;
   document.getElementById('modal').classList.add('open');

@@ -411,27 +411,20 @@ body{
 }
 .chapter-num{
   font-family:'Times New Roman',Georgia,serif;
-  font-style:italic;
-  font-size:12px;
-  letter-spacing:0.3em;
-  color:var(--ink3);
-  opacity:0.5;
-  text-transform:uppercase;
-  margin-bottom:12px;
+  font-size:clamp(36px,5vw,56px);
+  letter-spacing:0.08em;
+  color:var(--ink);
+  font-weight:700;
+  margin-bottom:10px;
+  line-height:1.1;
 }
 .chapter-name{
-  font-family:'Times New Roman',Georgia,serif;
-  font-size:clamp(28px,4vw,42px);
-  font-weight:400;
-  color:var(--ink);
-  letter-spacing:0.03em;
-  line-height:1.1;
-  margin-bottom:10px;
+  display:none;
 }
 .chapter-sub{
   font-family:'Times New Roman',Georgia,serif;
   font-style:italic;
-  font-size:14px;
+  font-size:15px;
   color:var(--ink2);
   opacity:0.55;
 }
@@ -925,6 +918,9 @@ let adminOk=false, drag=null, curPage='';
 
 /* ── STORAGE ── */
 function getCats(){try{return JSON.parse(localStorage.getItem('dc')||'null')||['intro','love','work','mine']}catch{return['intro','love','work','mine']}}
+function getCatSubs(){try{return JSON.parse(localStorage.getItem('dcs')||'{}')}catch{return{}}}
+function saveCatSubs(o){localStorage.setItem('dcs',JSON.stringify(o))}
+function esc2(s){return String(s).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"')}
 function saveCats(a){localStorage.setItem('dc',JSON.stringify(a))}
 /* ── ENTRIES (Supabase) ── */
 let _ec=null;
@@ -987,8 +983,7 @@ function showPage(p){
 
 /* ── RENDER CHAPTER ── */
 async function renderChapter(cat){
-  const chaps={intro:'Chapter One',love:'Chapter Two',work:'Chapter Three',mine:'Chapter Four'};
-  const subs={intro:'Where it all begins',love:'What the heart holds',work:'Ambition and its cost',mine:'Everything else'};
+  const subs=getCatSubs();
   const all=await getEntries();
   const entries=all.filter(e=>e.cat===cat);
   const pg=document.getElementById('pageContainer');
@@ -999,9 +994,8 @@ async function renderChapter(cat){
       <div class="spine-shadow"></div>
       <div class="page-inner">
         <div class="chapter-header">
-          <div class="chapter-num">${chaps[cat]||cap(cat)}</div>
-          <div class="chapter-name">${cap(cat)}</div>
-          <div class="chapter-sub">${subs[cat]||''}</div>
+          <div class="chapter-num">${cap(cat)}</div>
+          <div class="chapter-sub">${esc2(subs[cat]||'')}</div>
         </div>`;
 
   if(!entries.length){
@@ -1188,9 +1182,27 @@ async function delMsg(id,btn){
 
 function renderCatAdmin(){
   const cats=getCats();
+  const subs=getCatSubs();
   document.getElementById('catChips').innerHTML=cats.map(c=>`
-    <div class="cat-chip">${c}<button onclick="removeCat('${c}')">&times;</button></div>`).join('');
+    <div class="cat-chip" style="flex-direction:column;align-items:flex-start;gap:4px;padding:8px 12px">
+      <div style="display:flex;align-items:center;gap:8px;width:100%">
+        <span style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">${c}</span>
+        <button onclick="removeCat('${c}')" style="margin-left:auto">&times;</button>
+      </div>
+      <input
+        class="a-field" style="margin-bottom:0;font-size:11px;padding:4px 8px;font-style:italic"
+        placeholder="Subtitle (e.g. Where it all begins)"
+        value="${esc(subs[c]||'')}"
+        onchange="updateCatSub('${c}',this.value)"
+      />
+    </div>`).join('');
   fillCatSelect();buildTabs();
+}
+
+function updateCatSub(cat, val){
+  const subs=getCatSubs();
+  subs[cat]=val;
+  saveCatSubs(subs);
 }
 function addCat(){
   const v=document.getElementById('newCatInput').value.trim().toLowerCase().replace(/\s+/g,'-');
@@ -1348,6 +1360,39 @@ function showToast(msg,err=false){
   t.className='toast'+(err?' err':'')+' show';
   setTimeout(()=>t.className='toast'+(err?' err':''),2800);
 }
+
+/* ── MIGRATE localStorage entries to Supabase (runs once) ── */
+async function migrateLocalEntries(){
+  const key='diary_migrated_v1';
+  if(localStorage.getItem(key))return;
+  const old=[];
+  // check all possible old keys
+  ['de','diary_v2','diary_v3'].forEach(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k)||'[]');
+      if(d.length)old.push(...d);
+    }catch{}
+  });
+  if(!old.length){localStorage.setItem(key,'1');return;}
+  // fetch existing to avoid duplicates
+  try{
+    const r=await fetch(`${SUPA}/rest/v1/entries?select=id`,{headers:H});
+    const existing=await r.json();
+    const existIds=new Set(existing.map(e=>String(e.id)));
+    const toMigrate=old.filter(e=>!existIds.has(String(e.id)));
+    for(const e of toMigrate){
+      await fetch(`${SUPA}/rest/v1/entries`,{
+        method:'POST',
+        headers:{...H,'Prefer':'return=minimal'},
+        body:JSON.stringify({id:e.id,title:e.title,body:e.body,cat:e.cat,date:e.date||new Date().toISOString()})
+      });
+    }
+    if(toMigrate.length)showToast(`Synced ${toMigrate.length} entries.`);
+  }catch(err){console.error('Migration failed',err)}
+  localStorage.setItem(key,'1');
+}
+
+migrateLocalEntries();
 </script>
 </body>
 </html>

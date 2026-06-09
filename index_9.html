@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paulson's Diary</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=MedievalSharp&family=Cinzel:wght@400;700&family=Courier+Prime:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --sepia1:#f5e6c8;
+  --sepia2:#e8d5a3;
+  --sepia3:#d4b896;
+  --sepia4:#b8945a;
+  --sepia5:#8b6914;
+  --ink:#2a1a00;
+  --ink2:#4a3000;
+  --ink3:#6b4c0f;
+  --bg:#1a1008;
+  --shadow:rgba(20,10,0,0.7);
+}
+
+html{background:var(--bg);min-height:100vh}
+
+body{
+  font-family:'Times New Roman','IM Fell English',Georgia,serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+}
+
+/* ── BOOK COVER PAGE ── */
+.book-cover{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#0a0806;
+  padding:40px 20px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* stone wall texture */
+.book-cover::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 50% 0%, #1a1008 0%, transparent 60%),
+    radial-gradient(ellipse at 0% 50%, #120c06 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 50%, #120c06 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, #0e0a04 0%, transparent 50%);
+  background-color:#0d0906;
+}
+
+/* heavy grain — like old stone/leather */
+.book-cover::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
+  pointer-events:none;
+  mix-blend-mode:overlay;
+  opacity:0.7;
+}
+
+.cover-vignette{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(0,0,0,0.85) 100%);
+  pointer-events:none;
+  z-index:1;
+}
+
+/* cover card — dark worn leather */
+.cover-card{
+  position:relative;
+  z-index:2;
+  max-width:400px;
+  width:100%;
+  background:#0f0b07;
+  border-top:3px solid #2a1a0a;
+  border-bottom:3px solid #2a1a0a;
+  border-left:1px solid #1e1208;
+  border-right:1px solid #1e1208;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.02),
+    inset 0 0 80px rgba(0,0,0,0.6),
+    0 30px 100px rgba(0,0,0,0.9),
+    -8px 0 24px rgba(0,0,0,0.5),
+    8px 0 24px rgba(0,0,0,0.5);
+  padding:56px 48px 60px;
+  text-align:center;
+}
+
+/* spine line left */
+.cover-card::before{
+  content:'';
+  position:absolute;
+  left:20px;top:20px;bottom:20px;
+  width:1px;
+  background:linear-gradient(to bottom, transparent, rgba(80,50,20,0.2), transparent);
+}
+/* spine line right */
+.cover-card::after{
+  content:'';
+  position:absolute;
+  right:20px;top:20px;bottom:20px;
+  width:1px;
+  background:linear-gradient(to bottom, transparent, rgba(80,50,20,0.2), transparent);
+}
+
+.cover-top-rule{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:32px;
+}
+.cover-top-rule::before,.cover-top-rule::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(to right, transparent, rgba(180,160,130,0.2), transparent);
+}
+.cover-top-rule span{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:10px;color:rgba(180,160,130,0.25);
+  letter-spacing:0.3em;
+}
+
+.cover-eyebrow{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:9px;letter-spacing:0.55em;
+  text-transform:uppercase;
+  color:rgba(200,185,160,0.28);
+  margin-bottom:24px;
+}
+
+.cover-title-main{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:clamp(34px,6vw,52px);
+  font-weight:700;
+  color:#d4c9b4;
+  line-height:1.15;
+  letter-spacing:0.08em;
+  margin-bottom:4px;
+  text-shadow:0 2px 20px rgba(0,0,0,0.8);
+  /* pressed into leather effect */
+  filter:contrast(0.9);
+}
+
+.cover-title-sub{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:13px;
+  color:rgba(180,165,140,0.35);
+  margin-bottom:36px;
+  letter-spacing:0.12em;
+}
+
+.cover-divider{
+  display:flex;align-items:center;gap:10px;
+  margin:4px 0 28px;
+}
+.cover-divider::before,.cover-divider::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(to right, transparent, rgba(150,120,80,0.2), transparent);
+}
+.cover-divider span{
+  color:rgba(150,120,80,0.25);
+  font-size:8px;letter-spacing:0.4em;
+  font-family:'Times New Roman',Georgia,serif;
+}
+
+.cover-location{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:11px;
+  color:rgba(180,165,140,0.22);
+  margin-bottom:44px;
+  letter-spacing:0.15em;
+}
+
+.cover-corner{
+  position:absolute;
+  width:16px;height:16px;
+  border-color:rgba(150,120,80,0.18);
+  border-style:solid;
+}
+.cover-corner.tl{top:14px;left:14px;border-width:1px 0 0 1px}
+.cover-corner.tr{top:14px;right:14px;border-width:1px 1px 0 0}
+.cover-corner.bl{bottom:14px;left:14px;border-width:0 0 1px 1px}
+.cover-corner.br{bottom:14px;right:14px;border-width:0 1px 1px 0}
+
+.cover-open-btn{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:13px;
+  letter-spacing:0.2em;
+  background:none;
+  border:1px solid rgba(160,140,110,0.18);
+  color:rgba(200,185,155,0.45);
+  padding:13px 44px;
+  cursor:pointer;
+  transition:all 0.5s;
+  position:relative;z-index:1;
+}
+.cover-open-btn:hover{
+  color:rgba(200,185,155,0.85);
+  border-color:rgba(160,140,110,0.45);
+  background:rgba(255,255,255,0.02);
+  text-shadow:0 0 20px rgba(200,185,155,0.2);
+}
+
+/* ── BOOK SPREAD (main container) ── */
+.book-spread{
+  max-width:900px;
+  width:100%;
+  margin:0 auto;
+}
+
+/* ── PAGE ── */
+.page{
+  background:var(--sepia1);
+  position:relative;
+  box-shadow:
+    -4px 0 8px rgba(0,0,0,0.3),
+    4px 0 8px rgba(0,0,0,0.3),
+    0 8px 32px rgba(0,0,0,0.6),
+    inset 0 0 120px rgba(180,140,60,0.15);
+  display:none;
+}
+.page.active{display:block}
+
+/* paper texture overlay */
+.page::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+}
+
+/* aged edges */
+.page::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(100,60,0,0.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 100% 0%, rgba(80,40,0,0.2) 0%, transparent 35%),
+    radial-gradient(ellipse at 0% 100%, rgba(80,40,0,0.2) 0%, transparent 35%),
+    radial-gradient(ellipse at 100% 100%, rgba(100,60,0,0.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 0%, rgba(60,30,0,0.12) 0%, transparent 30%),
+    radial-gradient(ellipse at 50% 100%, rgba(60,30,0,0.12) 0%, transparent 30%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* spine shadow */
+.spine-shadow{
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:40px;
+  background:linear-gradient(to right, rgba(0,0,0,0.25), transparent);
+  z-index:1;
+  pointer-events:none;
+}
+
+/* ruled lines */
+.ruled{
+  background-image:repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 28px,
+    rgba(100,80,20,0.15) 28px,
+    rgba(100,80,20,0.15) 29px
+  );
+}
+
+/* ── INNER CONTENT ── */
+.page-inner{
+  position:relative;
+  z-index:2;
+  padding:56px 64px 64px 80px;
+}
+
+/* ── TITLE PAGE ── */
+.title-page .page-inner{
+  min-height:80vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:80px 60px;
+}
+
+.title-ornament{
+  font-size:20px;
+  color:var(--ink3);
+  opacity:0.5;
+  letter-spacing:0.5em;
+  margin-bottom:32px;
+}
+
+.title-main{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:clamp(36px,6vw,64px);
+  font-weight:400;
+  color:var(--ink);
+  line-height:1.1;
+  letter-spacing:0.05em;
+  margin-bottom:12px;
+}
+
+.title-sub{
+  font-family:'IM Fell English',Georgia,serif;
+  font-style:italic;
+  font-size:18px;
+  color:var(--ink2);
+  opacity:0.7;
+  margin-bottom:48px;
+  letter-spacing:0.08em;
+}
+
+.title-rule{
+  width:200px;
+  height:1px;
+  background:var(--ink3);
+  opacity:0.3;
+  margin:24px auto;
+}
+.title-rule.double{
+  border-top:1px solid rgba(100,70,0,0.25);
+  border-bottom:1px solid rgba(100,70,0,0.25);
+  height:4px;
+  background:none;
+}
+
+.title-year{
+  font-family:'Courier Prime',monospace;
+  font-size:11px;
+  letter-spacing:0.4em;
+  color:var(--ink3);
+  opacity:0.5;
+  text-transform:uppercase;
+  margin-top:40px;
+}
+
+/* ── TABLE OF CONTENTS ── */
+.toc-title{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:13px;
+  letter-spacing:0.35em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  opacity:0.6;
+  text-align:center;
+  margin-bottom:32px;
+}
+
+.toc-item{
+  display:flex;
+  align-items:baseline;
+  gap:0;
+  margin-bottom:14px;
+  cursor:pointer;
+  transition:opacity 0.2s;
+}
+.toc-item:hover{opacity:0.7}
+.toc-chapter{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:11px;
+  color:var(--ink3);
+  opacity:0.5;
+  white-space:nowrap;
+  margin-right:10px;
+  min-width:80px;
+}
+.toc-name{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:17px;
+  color:var(--ink);
+  flex:1;
+}
+.toc-dots{
+  flex:1;
+  border-bottom:1px dotted rgba(80,50,0,0.2);
+  margin:0 10px;
+  min-width:20px;
+  position:relative;
+  top:-4px;
+}
+.toc-pg{
+  font-family:'Courier Prime',monospace;
+  font-size:12px;
+  color:var(--ink3);
+  opacity:0.5;
+}
+
+/* ── CHAPTER HEADER ── */
+.chapter-header{
+  text-align:center;
+  margin-bottom:48px;
+  padding-bottom:32px;
+  border-bottom:1px solid rgba(100,70,0,0.2);
+}
+.chapter-num{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:12px;
+  letter-spacing:0.3em;
+  color:var(--ink3);
+  opacity:0.5;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.chapter-name{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:clamp(28px,4vw,42px);
+  font-weight:400;
+  color:var(--ink);
+  letter-spacing:0.03em;
+  line-height:1.1;
+  margin-bottom:10px;
+}
+.chapter-sub{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:14px;
+  color:var(--ink2);
+  opacity:0.55;
+}
+
+/* ── ENTRY ── */
+.entry{
+  margin-bottom:48px;
+  padding-bottom:40px;
+  border-bottom:1px solid rgba(100,70,0,0.12);
+}
+.entry:last-child{border-bottom:none}
+
+.entry-dateline{
+  font-family:'Courier Prime',monospace;
+  font-size:10px;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  opacity:0.5;
+  margin-bottom:10px;
+}
+
+.entry-headline{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:22px;
+  font-weight:700;
+  color:var(--ink);
+  line-height:1.3;
+  margin-bottom:16px;
+  letter-spacing:0.01em;
+}
+
+.entry-body{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:15px;
+  line-height:1.9;
+  color:var(--ink);
+  opacity:0.85;
+  text-align:justify;
+  hyphens:auto;
+}
+
+.entry-body p{margin-bottom:14px}
+.entry-body p:first-child::first-letter{
+  font-size:3.2em;
+  font-weight:700;
+  float:left;
+  line-height:0.75;
+  margin:6px 8px 0 0;
+  color:var(--ink);
+}
+
+.read-more-link{
+  font-family:'Courier Prime',monospace;
+  font-size:10px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  opacity:0.5;
+  cursor:pointer;
+  display:inline-block;
+  margin-top:10px;
+  border-bottom:1px solid rgba(100,70,0,0.2);
+  padding-bottom:1px;
+  transition:opacity 0.2s;
+}
+.read-more-link:hover{opacity:0.9}
+
+/* ── PHOTO BOARD ── */
+.photo-board{
+  position:relative;
+  min-height:200px;
+  margin:24px -20px 8px;
+  padding:20px;
+  background:rgba(180,140,60,0.04);
+  border-top:1px solid rgba(100,70,0,0.1);
+  border-bottom:1px solid rgba(100,70,0,0.1);
+}
+.photo-board.empty-board{display:none}
+
+.polaroid{
+  position:absolute;
+  background:#fff;
+  padding:8px 8px 28px;
+  box-shadow:2px 3px 10px rgba(0,0,0,0.25),1px 1px 3px rgba(0,0,0,0.15);
+  cursor:grab;
+  user-select:none;
+  z-index:10;
+  transition:box-shadow 0.15s;
+}
+.polaroid:active{cursor:grabbing;box-shadow:4px 6px 20px rgba(0,0,0,0.4);z-index:20}
+.polaroid img{display:block;width:140px;height:110px;object-fit:cover;filter:sepia(30%) contrast(0.95)}
+.polaroid .pol-cap{
+  font-family:'Courier Prime',monospace;
+  font-size:9px;
+  text-align:center;
+  color:#333;
+  margin-top:5px;
+  letter-spacing:0.05em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:0 2px;
+}
+
+/* ── PAGE FOOTER ── */
+.page-footer{
+  position:relative;
+  z-index:2;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 64px 24px 80px;
+  border-top:1px solid rgba(100,70,0,0.15);
+}
+.footer-rule{
+  font-family:'Courier Prime',monospace;
+  font-size:9px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  opacity:0.3;
+}
+.page-num{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:13px;
+  color:var(--ink3);
+  opacity:0.4;
+}
+
+/* ── NAV TABS (look like book tabs) ── */
+.book-tabs{
+  display:flex;
+  justify-content:center;
+  gap:0;
+  flex-wrap:wrap;
+  margin-bottom:0;
+}
+.tab{
+  font-family:'Times New Roman',Georgia,serif;
+  font-style:italic;
+  font-size:13px;
+  color:var(--sepia3);
+  opacity:0.55;
+  background:rgba(245,230,200,0.06);
+  border:1px solid rgba(200,160,80,0.12);
+  border-bottom:none;
+  padding:10px 22px;
+  cursor:pointer;
+  transition:all 0.2s;
+  letter-spacing:0.03em;
+}
+.tab:hover{opacity:0.85;background:rgba(245,230,200,0.1)}
+.tab.active{
+  color:var(--ink);
+  background:var(--sepia1);
+  opacity:1;
+  border-color:rgba(200,160,80,0.2);
+  font-weight:bold;
+}
+
+/* ── WRITE PAGE ── */
+.write-page .page-inner{padding:56px 64px 48px 80px}
+
+.letter-label{
+  font-family:'Courier Prime',monospace;
+  font-size:9px;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  opacity:0.45;
+  margin-bottom:6px;
+  margin-top:24px;
+  display:block;
+}
+.letter-label:first-child{margin-top:0}
+
+.letter-field{
+  font-family:'Times New Roman',Georgia,serif;
+  font-size:15px;
+  color:var(--ink);
+  background:transparent;
+  border:none;
+  border-bottom:1px solid rgba(80,50,0,0.2);
+  outline:none;
+  width:100%;
+  padding:4px 0 8px;
+  line-height:1.6;
+}
+.letter-field::placeholder{color:var(--ink3);opacity:0.3;font-style:italic}
+.letter-area{
+  min-height:180px;resize:none;
+  border-bottom:none;
+  line-height:29px;
+  margin-top:6px;
+  font-size:15px;
+}
+.send-btn{
+  font-family:'Courier Prime',monospace;
+  font-size:10px;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  background:var(--ink);
+  color:var(--sepia1);
+  border:none;
+  padding:12px 36px;
+  cursor:pointer;
+  margin-top:28px;
+  display:block;
+  margin-left:auto;
+  transition:opacity 0.2s;
+}
+.send-btn:hover{opacity:0.75}
+.send-btn:disabled{opacity:0.35;cursor:not-allowed}
+
+/* ── ADMIN ── */
+.admin-gate-wrap{max-width:360px;margin:0 auto;text-align:center;padding:40px 0}
+.admin-gate-wrap h3{font-family:'Times New Roman',Georgia,serif;font-size:24px;font-style:italic;color:var(--ink);margin-bottom:6px}
+.admin-gate-wrap p{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--ink3);opacity:0.4;margin-bottom:28px}
+.pw-field{
+  font-family:'Courier Prime',monospace;font-size:14px;
+  background:rgba(245,230,200,0.5);
+  border:1px solid rgba(80,50,0,0.2);
+  color:var(--ink);padding:12px 20px;width:100%;outline:none;
+  letter-spacing:0.15em;text-align:center;margin-bottom:12px;
+}
+.pw-field::placeholder{opacity:0.3}
+.pw-btn{
+  font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;
+  background:var(--ink);color:var(--sepia1);border:none;padding:12px 36px;cursor:pointer;
+}
+
+.admin-inner{display:none}
+.admin-sec{margin-bottom:48px}
+.admin-sec h4{font-family:'Times New Roman',Georgia,serif;font-size:20px;font-style:italic;color:var(--ink);margin-bottom:4px}
+.admin-sec-sub{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--ink3);opacity:0.4;margin-bottom:20px}
+
+.a-field{
+  font-family:'Times New Roman',Georgia,serif;font-size:14px;
+  background:rgba(245,230,200,0.5);border:1px solid rgba(80,50,0,0.15);
+  color:var(--ink);padding:9px 12px;outline:none;width:100%;margin-bottom:10px;
+}
+.a-field::placeholder{opacity:0.3;font-style:italic}
+.a-area{min-height:120px;resize:vertical}
+.a-select option{background:#f5e6c8;color:var(--ink)}
+.a-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.a-btn{
+  font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;
+  background:var(--ink);color:var(--sepia1);border:none;padding:10px 28px;cursor:pointer;margin-top:4px;
+  transition:opacity 0.2s;
+}
+.a-btn:hover{opacity:0.7}
+.a-btn.ghost{background:transparent;color:var(--ink);border:1px solid rgba(80,50,0,0.2)}
+.a-btn.ghost:hover{background:rgba(80,50,0,0.05)}
+
+.msg-item{
+  border-bottom:1px solid rgba(80,50,0,0.1);
+  padding:16px 0 14px;
+}
+.msg-from{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink3);opacity:0.5;margin-bottom:6px}
+.msg-from span{color:var(--ink);opacity:1}
+.msg-body{font-family:'Times New Roman',Georgia,serif;font-size:14px;color:var(--ink);line-height:1.7;opacity:0.85}
+.msg-time{font-family:'Courier Prime',monospace;font-size:8px;color:var(--ink3);opacity:0.35;margin-top:6px;letter-spacing:0.1em}
+.del-lnk{font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;background:none;border:none;color:var(--ink3);opacity:0.35;cursor:pointer;margin-top:4px;transition:opacity 0.15s}
+.del-lnk:hover{opacity:0.8}
+
+.cat-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.cat-chip{
+  font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;
+  background:rgba(245,230,200,0.5);border:1px solid rgba(80,50,0,0.2);color:var(--ink);
+  padding:5px 12px;display:flex;align-items:center;gap:8px;
+}
+.cat-chip button{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:13px;line-height:1;opacity:0.4;transition:opacity 0.15s}
+.cat-chip button:hover{opacity:1}
+
+.entry-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid rgba(80,50,0,0.08)}
+.er-title{font-family:'Times New Roman',Georgia,serif;font-size:14px;color:var(--ink);flex:1;min-width:100px}
+.er-cat{font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink3);opacity:0.5;border:1px solid rgba(80,50,0,0.15);padding:2px 7px}
+
+.drop-board{
+  position:relative;
+  min-height:320px;
+  border:2px dashed rgba(80,50,0,0.15);
+  background:rgba(180,140,60,0.03);
+  margin-bottom:10px;
+  transition:border-color 0.2s, background 0.2s;
+}
+.drop-board.drag-over{
+  border-color:rgba(80,50,0,0.4);
+  background:rgba(180,140,60,0.08);
+}
+.drop-hint{
+  position:absolute;
+  inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.25em;
+  text-transform:uppercase;color:var(--ink3);opacity:0.3;
+  pointer-events:none;
+  flex-direction:column;gap:8px;
+}
+.drop-hint span{font-size:24px;opacity:0.4}
+
+/* ── MODAL (full entry) ── */
+.modal-bg{
+  position:fixed;inset:0;
+  background:rgba(10,5,0,0.88);
+  z-index:200;display:none;
+  align-items:flex-start;justify-content:center;
+  padding:40px 20px 80px;overflow-y:auto;
+}
+.modal-bg.open{display:flex}
+.modal-page{
+  background:var(--sepia1);
+  max-width:720px;width:100%;
+  position:relative;
+  box-shadow:0 12px 60px rgba(0,0,0,0.7);
+}
+.modal-page::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+.modal-inner{padding:56px 64px 56px 72px;position:relative;z-index:1}
+.modal-close-btn{
+  position:absolute;top:16px;right:20px;
+  font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--ink3);opacity:0.35;background:none;border:none;cursor:pointer;z-index:2;transition:opacity 0.15s
+}
+.modal-close-btn:hover{opacity:0.8}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:var(--ink);color:var(--sepia1);
+  padding:11px 28px;
+  font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:0.2em;
+  opacity:0;transition:all 0.3s;z-index:400;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:#5a1a0a}
+
+.empty-state{
+  text-align:center;padding:60px 0;
+  font-family:'Times New Roman',Georgia,serif;font-style:italic;
+  color:var(--ink3);opacity:0.35;font-size:16px;
+}
+
+@media(max-width:600px){
+  .page-inner{padding:40px 28px 40px 36px}
+  .page-footer{padding:14px 28px 20px 36px}
+  .a-row{grid-template-columns:1fr}
+  .book-tabs .tab{padding:9px 14px;font-size:12px}
+  .modal-inner{padding:40px 28px 40px 36px}
+  .write-page .page-inner{padding:40px 28px 40px 36px}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="book-cover" id="coverView">
+  <div class="cover-vignette"></div>
+  <div class="cover-card">
+    <div class="cover-corner tl"></div>
+    <div class="cover-corner tr"></div>
+    <div class="cover-corner bl"></div>
+    <div class="cover-corner br"></div>
+
+    <div class="cover-top-rule"><span>&#10022;</span></div>
+    <div class="cover-eyebrow">A Personal Record</div>
+    <div class="cover-title-main">Paulson's<br>Diary</div>
+    <div class="cover-divider"><span>&#10022; &#10022; &#10022;</span></div>
+    <div class="cover-title-sub">thoughts &amp; fragments</div>
+
+    <button class="cover-open-btn" onclick="openBook()">Open the Book</button>
+  </div>
+</div>
+
+<!-- BOOK -->
+<div id="bookView" style="display:none">
+  <div class="book-spread">
+    <!-- TABS -->
+    <div class="book-tabs" id="bookTabs"></div>
+
+    <!-- PAGES -->
+    <div id="pageContainer"></div>
+
+    <!-- WRITE PAGE -->
+    <div id="writePage" class="page write-page" style="display:none">
+      <div class="spine-shadow"></div>
+      <div class="page-inner">
+        <div class="chapter-header" style="margin-bottom:36px">
+          <div class="chapter-num">A Letter</div>
+          <div class="chapter-name">Write to Me</div>
+          <div class="chapter-sub">I read every word</div>
+        </div>
+        <span class="letter-label">Your name</span>
+        <input class="letter-field" id="senderName" placeholder="or remain anonymous"/>
+        <span class="letter-label">Your message</span>
+        <textarea class="letter-field letter-area" id="senderMsg" placeholder="Say anything you wish..."></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send Letter</button>
+      </div>
+      <div class="page-footer">
+        <span class="footer-rule">Paulson's Diary</span>
+        <span class="page-num">—</span>
+      </div>
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div id="adminPage" class="page" style="display:none">
+      <div class="spine-shadow"></div>
+      <div class="page-inner">
+
+        <div id="adminGate">
+          <div class="admin-gate-wrap">
+            <h3>Private Access</h3>
+            <p>enter password to continue</p>
+            <input class="pw-field" id="pwInput" type="password" placeholder="password" onkeydown="if(event.key==='Enter')checkPw()"/>
+            <button class="pw-btn" onclick="checkPw()">Enter</button>
+          </div>
+        </div>
+
+        <div class="admin-inner" id="adminInner">
+
+          <!-- inbox -->
+          <div class="admin-sec">
+            <h4>Inbox</h4>
+            <div class="admin-sec-sub">letters written to you</div>
+            <div id="adminMsgs"></div>
+          </div>
+
+          <!-- categories -->
+          <div class="admin-sec">
+            <h4>Categories</h4>
+            <div class="admin-sec-sub">add or remove chapters</div>
+            <div class="cat-chips" id="catChips"></div>
+            <div style="display:flex;gap:8px">
+              <input class="a-field" id="newCatInput" placeholder="New chapter name" style="margin-bottom:0" onkeydown="if(event.key==='Enter')addCat()"/>
+              <button class="a-btn" onclick="addCat()" style="white-space:nowrap">Add</button>
+            </div>
+          </div>
+
+          <!-- new entry -->
+          <div class="admin-sec">
+            <h4>New Entry</h4>
+            <div class="admin-sec-sub">write a new diary entry</div>
+            <div class="a-row">
+              <input class="a-field" id="newTitle" placeholder="Title"/>
+              <select class="a-field a-select" id="newCat"></select>
+            </div>
+            <textarea class="a-field a-area" id="newBody" placeholder="Write your entry..."></textarea>
+            <button class="a-btn" onclick="saveEntry()">Save Entry</button>
+          </div>
+
+          <!-- manage entries -->
+          <div class="admin-sec">
+            <h4>All Entries</h4>
+            <div class="admin-sec-sub">manage entries and photos</div>
+            <div id="adminEntries"></div>
+          </div>
+
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="footer-rule">Paulson's Diary</span>
+        <span class="page-num">Admin</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" onclick="maybeClose(event)">
+  <div class="modal-page" id="modalPage">
+    <button class="modal-close-btn" onclick="closeModal()">Close</button>
+    <div class="modal-inner" id="modalInner"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── CONFIG ── */
+const SUPA='https://cnwqfcbufuznbpsjdjgm.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNud3FmY2J1ZnV6bmJwc2pkamdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NzY4NTksImV4cCI6MjA5NjU1Mjg1OX0.62nSP1orWsdEFk_56vG-PoCcrbXrWYJrD03TpDcz09U';
+const H={'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY};
+const PW='Paulson';
+
+let adminOk=false, drag=null, curPage='';
+
+/* ── STORAGE ── */
+function getCats(){try{return JSON.parse(localStorage.getItem('dc')||'null')||['intro','love','work','mine']}catch{return['intro','love','work','mine']}}
+function saveCats(a){localStorage.setItem('dc',JSON.stringify(a))}
+function getEntries(){try{return JSON.parse(localStorage.getItem('de')||'[]')}catch{return[]}}
+function saveEntries(a){localStorage.setItem('de',JSON.stringify(a))}
+
+/* ── OPEN BOOK ── */
+function openBook(){
+  document.getElementById('coverView').style.display='none';
+  document.getElementById('bookView').style.display='block';
+  buildTabs();
+  showPage('intro');
+}
+
+/* ── TABS ── */
+function buildTabs(){
+  const cats=getCats();
+  const el=document.getElementById('bookTabs');
+  el.innerHTML='';
+  cats.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='tab'+(c===curPage?' active':'');
+    b.textContent=cap(c);
+    b.onclick=()=>showPage(c);
+    el.appendChild(b);
+  });
+  ['Write to Me','_'].forEach((lbl,i)=>{
+    const b=document.createElement('button');
+    const id=i===0?'write':'admin';
+    b.className='tab'+(curPage===id?' active':'');
+    b.textContent=lbl;
+    b.onclick=()=>showPage(id);
+    el.appendChild(b);
+  });
+}
+
+/* ── SHOW PAGE ── */
+function showPage(p){
+  curPage=p;
+  document.getElementById('pageContainer').style.display='none';
+  document.getElementById('writePage').style.display='none';
+  document.getElementById('adminPage').style.display='none';
+
+  if(p==='write'){
+    document.getElementById('writePage').style.display='block';
+  } else if(p==='admin'){
+    document.getElementById('adminPage').style.display='block';
+    if(adminOk){loadMsgs();renderAdminEntries();renderCatAdmin();fillCatSelect()}
+  } else {
+    document.getElementById('pageContainer').style.display='block';
+    renderChapter(p);
+  }
+  buildTabs();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── RENDER CHAPTER ── */
+function renderChapter(cat){
+  const chaps={intro:'Chapter One',love:'Chapter Two',work:'Chapter Three',mine:'Chapter Four'};
+  const subs={intro:'Where it all begins',love:'What the heart holds',work:'Ambition and its cost',mine:'Everything else'};
+  const entries=getEntries().filter(e=>e.cat===cat);
+  const pg=document.getElementById('pageContainer');
+  const pgNum=getCats().indexOf(cat)+1;
+
+  let html=`
+    <div class="page ruled active">
+      <div class="spine-shadow"></div>
+      <div class="page-inner">
+        <div class="chapter-header">
+          <div class="chapter-num">${chaps[cat]||cap(cat)}</div>
+          <div class="chapter-name">${cap(cat)}</div>
+          <div class="chapter-sub">${subs[cat]||''}</div>
+        </div>`;
+
+  if(!entries.length){
+    html+=`<div class="empty-state">Nothing written here yet.</div>`;
+  } else {
+    entries.forEach(e=>{
+      const preview=e.body.replace(/\n/g,' ').substring(0,280)+(e.body.length>280?'...':'');
+      html+=`
+        <div class="entry">
+          <div class="entry-dateline">${fmtDate(e.date)}</div>
+          <div class="entry-headline">${esc(e.title)}</div>
+          <div class="entry-body"><p>${esc(preview)}</p></div>
+          <span class="read-more-link" onclick="openEntry(${e.id})">Continue reading</span>
+          <div class="photo-board empty-board" id="pb-${e.id}"></div>
+        </div>`;
+    });
+  }
+
+  html+=`
+      </div>
+      <div class="page-footer">
+        <span class="footer-rule">Paulson's Diary</span>
+        <span class="page-num">${pgNum}</span>
+      </div>
+    </div>`;
+
+  pg.innerHTML=html;
+  entries.forEach(e=>loadBoard(`pb-${e.id}`,e.id,false));
+}
+
+/* ── PHOTO BOARD ── */
+async function loadBoard(cid,eid,editable){
+  const c=document.getElementById(cid);
+  if(!c)return;
+  const photos=await fetchPhotos(String(eid));
+  if(!photos.length){
+    if(editable){c.classList.remove('empty-board');c.innerHTML='<div style="text-align:center;padding:20px;font-family:\'Courier Prime\',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);opacity:.35">No photos yet</div>'}
+    return;
+  }
+  c.classList.remove('empty-board');
+  let maxH=220;
+  photos.forEach(p=>{const b=(p.y||20)+160;if(b>maxH)maxH=b});
+  c.style.minHeight=maxH+'px';
+  c.innerHTML='';
+  photos.forEach(p=>{c.appendChild(makePolaroid(p,editable))});
+}
+
+function makePolaroid(p,editable){
+  const w=document.createElement('div');
+  w.className='polaroid';
+  w.dataset.id=p.id;
+  w.style.left=(p.x||20)+'px';
+  w.style.top=(p.y||20)+'px';
+  w.style.transform=`rotate(${p.rotation||0}deg)`;
+  const img=document.createElement('img');
+  img.src=p.url;img.alt=p.caption||'';img.draggable=false;
+  const cap=document.createElement('div');
+  cap.className='pol-cap';cap.textContent=p.caption||'';
+  w.appendChild(img);w.appendChild(cap);
+  if(editable){
+    w.addEventListener('mousedown',e=>startDrag(e,w,p));
+    w.addEventListener('touchstart',e=>startDrag(e,w,p),{passive:true});
+    w.addEventListener('contextmenu',async e=>{
+      e.preventDefault();
+      if(!confirm('Remove this photo?'))return;
+      await fetch(`${SUPA}/rest/v1/photos?id=eq.${p.id}`,{method:'DELETE',headers:H});
+      w.remove();
+    });
+  } else {
+    w.style.pointerEvents='none';
+  }
+  return w;
+}
+
+/* ── DRAG ── */
+function startDrag(e,el,p){
+  e.stopPropagation();
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  const cy=e.touches?e.touches[0].clientY:e.clientY;
+  drag={el,p,sx:cx,sy:cy,ox:p.x||20,oy:p.y||20};
+  el.style.cursor='grabbing';el.style.zIndex=20;
+}
+document.addEventListener('mousemove',onDrag);
+document.addEventListener('touchmove',onDrag,{passive:true});
+document.addEventListener('mouseup',endDrag);
+document.addEventListener('touchend',endDrag);
+function onDrag(e){
+  if(!drag)return;
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  const cy=e.touches?e.touches[0].clientY:e.clientY;
+  drag.p.x=drag.ox+(cx-drag.sx);
+  drag.p.y=drag.oy+(cy-drag.sy);
+  drag.el.style.left=drag.p.x+'px';
+  drag.el.style.top=drag.p.y+'px';
+}
+async function endDrag(){
+  if(!drag)return;
+  drag.el.style.cursor='grab';drag.el.style.zIndex=10;
+  await fetch(`${SUPA}/rest/v1/photos?id=eq.${drag.p.id}`,{method:'PATCH',headers:H,body:JSON.stringify({x:drag.p.x,y:drag.p.y,rotation:drag.p.rotation||0})});
+  drag=null;
+}
+
+/* ── SUPABASE: PHOTOS ── */
+async function fetchPhotos(eid){
+  try{const r=await fetch(`${SUPA}/rest/v1/photos?entry_id=eq.${eid}&order=created_at.asc`,{headers:H});return await r.json()}catch{return[]}
+}
+async function uploadPhoto(file,eid){
+  const path=`${eid}/${Date.now()}.${file.name.split('.').pop()}`;
+  const r=await fetch(`${SUPA}/storage/v1/object/photos/${path}`,{method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type,'x-upsert':'true'},body:file});
+  if(!r.ok)throw new Error(await r.text());
+  return`${SUPA}/storage/v1/object/public/photos/${path}`;
+}
+async function savePhotoRec(eid,url,x,y,rot){
+  const r=await fetch(`${SUPA}/rest/v1/photos`,{method:'POST',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify({entry_id:eid,url,x,y,rotation:rot,caption:''})});
+  return(await r.json())[0];
+}
+
+/* ── OPEN ENTRY MODAL ── */
+async function openEntry(id){
+  const e=getEntries().find(x=>x.id===id);
+  if(!e)return;
+  document.getElementById('modalInner').innerHTML=`
+    <div style="font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink3);opacity:.45;margin-bottom:10px">${fmtDate(e.date)} — ${e.cat}</div>
+    <div style="font-family:'Times New Roman',Georgia,serif;font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--ink);margin-bottom:24px;line-height:1.2">${esc(e.title)}</div>
+    <div style="font-family:'Times New Roman',Georgia,serif;font-size:16px;color:var(--ink);line-height:1.9;opacity:.87;text-align:justify">${esc(e.body).replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>')}</div>
+    <div class="photo-board empty-board" id="modal-pb-${e.id}" style="margin:28px -20px 0"></div>
+  `;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  await loadBoard(`modal-pb-${e.id}`,e.id,false);
+}
+function maybeClose(e){if(e.target===document.getElementById('modal'))closeModal()}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
+
+/* ── SEND MESSAGE ── */
+async function sendMessage(){
+  const name=document.getElementById('senderName').value.trim()||'Anonymous';
+  const msg=document.getElementById('senderMsg').value.trim();
+  if(!msg){showToast('Please write something.',true);return}
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=true;btn.textContent='Sending...';
+  try{
+    const r=await fetch(`${SUPA}/rest/v1/messages`,{method:'POST',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({name,message:msg})});
+    if(!r.ok)throw new Error();
+    document.getElementById('senderName').value='';
+    document.getElementById('senderMsg').value='';
+    showToast('Your letter has been sent.');
+  }catch{showToast('Something went wrong.',true)}
+  finally{btn.disabled=false;btn.textContent='Send Letter'}
+}
+
+/* ── ADMIN ── */
+function checkPw(){
+  if(document.getElementById('pwInput').value===PW){
+    adminOk=true;
+    document.getElementById('adminGate').style.display='none';
+    document.getElementById('adminInner').style.display='block';
+    loadMsgs();renderAdminEntries();renderCatAdmin();fillCatSelect();
+  }else{showToast('Incorrect password.',true)}
+}
+
+async function loadMsgs(){
+  const el=document.getElementById('adminMsgs');
+  el.innerHTML='<div class="empty-state" style="padding:20px 0">Loading...</div>';
+  try{
+    const r=await fetch(`${SUPA}/rest/v1/messages?order=created_at.desc`,{headers:H});
+    const d=await r.json();
+    if(!d.length){el.innerHTML='<div class="empty-state" style="padding:20px 0;font-size:14px">No letters yet.</div>';return}
+    el.innerHTML=d.map(m=>`
+      <div class="msg-item">
+        <div class="msg-from">From: <span>${esc(m.name||'Anonymous')}</span></div>
+        <div class="msg-body">${esc(m.message).replace(/\n/g,'<br>')}</div>
+        <div class="msg-time">${new Date(m.created_at).toLocaleString()}</div>
+        <button class="del-lnk" onclick="delMsg(${m.id},this)">Delete</button>
+      </div>`).join('');
+  }catch{el.innerHTML='<div class="empty-state">Could not load.</div>'}
+}
+async function delMsg(id,btn){
+  if(!confirm('Delete?'))return;
+  await fetch(`${SUPA}/rest/v1/messages?id=eq.${id}`,{method:'DELETE',headers:H});
+  btn.closest('.msg-item').remove();
+}
+
+function renderCatAdmin(){
+  const cats=getCats();
+  document.getElementById('catChips').innerHTML=cats.map(c=>`
+    <div class="cat-chip">${c}<button onclick="removeCat('${c}')">&times;</button></div>`).join('');
+  fillCatSelect();buildTabs();
+}
+function addCat(){
+  const v=document.getElementById('newCatInput').value.trim().toLowerCase().replace(/\s+/g,'-');
+  if(!v)return;
+  const cats=getCats();
+  if(cats.includes(v)){showToast('Already exists.',true);return}
+  cats.push(v);saveCats(cats);
+  document.getElementById('newCatInput').value='';
+  renderCatAdmin();showToast(`"${v}" added.`);
+}
+function removeCat(c){
+  if(!confirm(`Remove "${c}"?`))return;
+  const cats=getCats().filter(x=>x!==c);saveCats(cats);
+  renderCatAdmin();
+  if(curPage===c)showPage(cats[0]||'intro');
+}
+function fillCatSelect(){
+  const s=document.getElementById('newCat');if(!s)return;
+  s.innerHTML=getCats().map(c=>`<option value="${c}">${cap(c)}</option>`).join('');
+}
+
+function saveEntry(){
+  const t=document.getElementById('newTitle').value.trim();
+  const b=document.getElementById('newBody').value.trim();
+  const c=document.getElementById('newCat').value;
+  if(!t||!b){showToast('Title and body required.',true);return}
+  const entries=getEntries();
+  entries.unshift({id:Date.now(),date:new Date().toISOString(),title:t,body:b,cat:c});
+  saveEntries(entries);
+  document.getElementById('newTitle').value='';
+  document.getElementById('newBody').value='';
+  renderAdminEntries();showToast('Entry saved.');
+}
+
+function renderAdminEntries(){
+  const entries=getEntries();
+  const el=document.getElementById('adminEntries');
+  if(!entries.length){el.innerHTML='<div class="empty-state" style="padding:20px 0;font-size:14px">No entries.</div>';return}
+  el.innerHTML=entries.map(e=>`
+    <div class="entry-row">
+      <div class="er-title">${esc(e.title)}</div>
+      <div class="er-cat">${e.cat}</div>
+      <button class="a-btn ghost" style="padding:5px 12px;font-size:8px" onclick="openPhotoMgr(${e.id})">Photos</button>
+      <button class="del-lnk" onclick="delEntry(${e.id})">Delete</button>
+    </div>`).join('');
+}
+function delEntry(id){
+  if(!confirm('Delete entry?'))return;
+  saveEntries(getEntries().filter(e=>e.id!==id));
+  renderAdminEntries();showToast('Deleted.');
+}
+
+async function openPhotoMgr(eid){
+  const e=getEntries().find(x=>x.id===eid);if(!e)return;
+  document.getElementById('modalInner').innerHTML=`
+    <div style="font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink3);opacity:.45;margin-bottom:8px">Photo Board</div>
+    <div style="font-family:'Times New Roman',Georgia,serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:16px">${esc(e.title)}</div>
+    <div style="font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);opacity:.35;margin-bottom:10px">Drag photos from your computer onto the board below</div>
+    <div class="drop-board" id="mgr-pb-${eid}">
+      <div class="drop-hint"><span>+</span>Drop photos here</div>
+    </div>
+    <div style="font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);opacity:.3;margin-top:8px">Right-click a photo to delete &bull; Drag to reposition</div>
+  `;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+
+  const board=document.getElementById(`mgr-pb-${eid}`);
+  // drag from desktop onto board
+  board.addEventListener('dragover',e=>{e.preventDefault();board.classList.add('drag-over')});
+  board.addEventListener('dragleave',()=>board.classList.remove('drag-over'));
+  board.addEventListener('drop',async e=>{
+    e.preventDefault();board.classList.remove('drag-over');
+    const files=Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+    if(!files.length)return;
+    // drop position relative to board
+    const rect=board.getBoundingClientRect();
+    let x=e.clientX-rect.left-70;
+    let y=e.clientY-rect.top-55;
+    if(x<0)x=10;if(y<0)y=10;
+    await uploadFilesToBoard(files,eid,board,x,y);
+  });
+
+  await loadBoardEditable(board,eid);
+}
+
+async function loadBoardEditable(board,eid){
+  const photos=await fetchPhotos(String(eid));
+  // remove hint if photos exist
+  if(photos.length){
+    const hint=board.querySelector('.drop-hint');
+    if(hint)hint.style.display='none';
+  }
+  let maxH=320;
+  photos.forEach(p=>{const b=(p.y||20)+160;if(b>maxH)maxH=b});
+  board.style.minHeight=maxH+'px';
+  photos.forEach(p=>{board.appendChild(makePolaroid(p,true))});
+}
+
+async function uploadFilesToBoard(files,eid,board,startX,startY){
+  showToast('Uploading...');
+  let x=startX,y=startY;
+  const hint=board.querySelector('.drop-hint');
+  for(const f of files){
+    try{
+      const url=await uploadPhoto(f,String(eid));
+      const rot=(Math.random()*10-5);
+      const rec=await savePhotoRec(eid,url,x,y,rot);
+      if(hint)hint.style.display='none';
+      board.appendChild(makePolaroid(rec,true));
+      x+=20;y+=10; // slight offset for each photo
+    }catch(err){showToast('Upload failed.',true)}
+  }
+  showToast('Done.');
+}
+
+
+
+/* ── HELPERS ── */
+function fmtDate(iso){
+  const d=new Date(iso);
+  const mo=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dy=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  return`${dy[d.getDay()]}, ${mo[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function showToast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(err?' err':'')+' show';
+  setTimeout(()=>t.className='toast'+(err?' err':''),2800);
+}
+</script>
+</body>
+</html>
